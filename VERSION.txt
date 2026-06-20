@@ -1,0 +1,4 @@
+Google Sheets Booking System
+Version: 1.0.0
+Release date: 2026-06-20
+Licence: MIT

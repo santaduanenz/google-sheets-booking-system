@@ -1,0 +1,2502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>Book <?= businessName ?></title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --page-bg: #f6f8fb;
+      --card-bg: #ffffff;
+      --text: #183b56;
+      --muted: #6b7c8f;
+      --border: #d8e0e8;
+      --primary: #034614;
+      --primary-dark: #02340f;
+      --primary-soft: #e7f1e9;
+      --primary-hover: #cfe0d3;
+      --red: #c62828;
+      --content-width: 820px;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--page-bg);
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    .booking-card {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 330px minmax(0, 1fr);
+      background: var(--card-bg);
+      border: 1px solid #e2e8ef;
+    }
+
+    .sidebar {
+      padding: 40px 32px;
+      border-right: 1px solid var(--border);
+    }
+
+    .host-name {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: 32px;
+      line-height: 1.15;
+    }
+
+    h2,
+    h3 {
+      margin: 0;
+    }
+
+    .description {
+      margin: 0 0 28px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .meta {
+      display: grid;
+      gap: 14px;
+    }
+
+    .meta-item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      color: #35566f;
+      font-weight: bold;
+    }
+
+    .meta-icon {
+      width: 24px;
+      color: var(--primary);
+      text-align: center;
+    }
+
+    .selected-area {
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .selected-summary {
+      margin-top: 10px;
+      color: #35566f;
+      font-size: 14px;
+    }
+
+    .selected-summary ul {
+      margin: 10px 0 0;
+      padding-left: 18px;
+    }
+
+    .selected-summary li {
+      margin-bottom: 8px;
+    }
+
+    .empty {
+      color: var(--muted);
+    }
+
+    .clear-button {
+      margin-top: 12px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--primary);
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .main {
+      width: 100%;
+      min-width: 0;
+      padding: 40px;
+    }
+
+    .top-heading,
+    .booking-picker,
+    .details-panel,
+    .confirmation {
+      width: 100%;
+      max-width: var(--content-width);
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .section-heading {
+      margin-bottom: 24px;
+    }
+
+    .kicker {
+      margin: 0 0 5px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .booking-picker {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 220px;
+      gap: 28px;
+    }
+
+    .calendar-section,
+    .time-panel {
+      height: 450px;
+      min-height: 450px;
+      max-height: 450px;
+    }
+
+    .calendar-section {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .calendar-header {
+      display: grid;
+      grid-template-columns: 42px minmax(180px, 1fr) 42px;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    #calendarTitle {
+      text-align: center;
+      white-space: nowrap;
+      font-size: 17px;
+    }
+
+    .calendar-nav {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: white;
+      color: var(--primary);
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .calendar-nav:hover {
+      background: var(--primary-soft);
+    }
+
+    .calendar-nav:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .weekdays,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .weekdays {
+      margin-bottom: 10px;
+      color: #8391a0;
+      text-align: center;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .calendar-grid {
+      flex: 1;
+      min-height: 0;
+      grid-template-rows: repeat(6, minmax(0, 1fr));
+      place-items: center;
+    }
+
+    .calendar-day {
+      width: 44px;
+      height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: #24465f;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .calendar-day.other-month {
+      opacity: 0.25;
+    }
+
+    .calendar-day.unavailable {
+      color: #a0aab4;
+    }
+
+    .calendar-day.available {
+      background: var(--primary-soft);
+      color: var(--primary);
+      cursor: pointer;
+      transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .calendar-day.available:hover {
+      background: var(--primary-hover);
+      transform: scale(1.08);
+    }
+
+    .calendar-day.selected-date {
+      background: var(--primary);
+      color: white;
+    }
+
+    .calendar-day.today {
+      box-shadow: inset 0 0 0 2px var(--primary);
+    }
+
+    .calendar-loading {
+      grid-column: 1 / -1;
+      grid-row: 1 / -1;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .time-panel {
+      width: 220px;
+      min-width: 220px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .time-panel h3 {
+      margin-bottom: 14px;
+      font-size: 16px;
+    }
+
+    .time-list {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      align-content: start;
+      gap: 10px;
+      padding-right: 6px;
+      overflow-y: auto;
+    }
+
+    .time-list::-webkit-scrollbar {
+      width: 7px;
+    }
+
+    .time-list::-webkit-scrollbar-track {
+      background: #f1f3f5;
+      border-radius: 10px;
+    }
+
+    .time-list::-webkit-scrollbar-thumb {
+      background: #b7c2ba;
+      border-radius: 10px;
+    }
+
+    .time-list::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+
+    .time-slot {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      background: white;
+      color: var(--primary);
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .time-slot:hover {
+      background: var(--primary-soft);
+    }
+
+    .time-slot.selected {
+      background: var(--primary);
+      color: white;
+    }
+
+    .time-slot.unavailable {
+      border-color: #d7dde3;
+      background: #f4f6f8;
+      color: #a0aab4;
+      text-decoration: line-through;
+      cursor: not-allowed;
+    }
+
+    .no-times,
+    .loading {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .details-panel {
+      margin-top: 38px;
+      padding-top: 34px;
+      border-top: 1px solid var(--border);
+    }
+
+    .required-note,
+    .required-star {
+      color: var(--red);
+    }
+
+    .required-note {
+      font-weight: bold;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 16px;
+      color: #24465f;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      margin-top: 7px;
+      padding: 12px 13px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      color: var(--text);
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: 3px solid rgba(3, 70, 20, 0.15);
+      border-color: var(--primary);
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .payment-panel {
+      display: none;
+      margin: 6px 0 22px;
+      padding: 20px;
+      border: 1px solid #b8d3bf;
+      border-left: 5px solid var(--primary);
+      border-radius: 8px;
+      background: #f4f8f5;
+    }
+
+    .payment-panel.show {
+      display: block;
+    }
+
+    .payment-price {
+      margin: 4px 0;
+      color: var(--primary);
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .payment-panel p {
+      margin: 8px 0;
+    }
+
+    .confirm-button {
+      width: 100%;
+      padding: 14px 18px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .confirm-button:hover {
+      background: var(--primary-dark);
+    }
+
+    .confirm-button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .status {
+      display: none;
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 8px;
+    }
+
+    .status.error {
+      display: block;
+      border: 1px solid #efcaca;
+      background: #fff0f0;
+      color: #8f1f2b;
+    }
+
+    .status.info {
+      display: block;
+      border: 1px solid #c9ddd0;
+      background: #f1f8f3;
+      color: var(--primary);
+    }
+
+    .confirmation {
+      display: none;
+      margin-top: 28px;
+      padding: 24px;
+      border: 1px solid #cfe7dc;
+      border-radius: 12px;
+      background: #f2fbf7;
+    }
+
+    .confirmation.show {
+      display: block;
+    }
+
+    .processing-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.97);
+    }
+
+    .processing-overlay.show {
+      display: grid;
+    }
+
+    .processing-card {
+      width: 100%;
+      max-width: 520px;
+      padding: 30px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: white;
+      text-align: center;
+      box-shadow:
+        0 20px 50px
+        rgba(0, 0, 0, 0.12);
+    }
+
+    .success-page {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      background: var(--page-bg);
+    }
+
+    .success-card {
+      width: 100%;
+      max-width: 680px;
+      padding: 40px;
+      border: 1px solid var(--border);
+      border-top: 8px solid var(--primary);
+      border-radius: 14px;
+      background: white;
+      text-align: center;
+      box-shadow:
+        0 18px 45px
+        rgba(18, 43, 70, 0.12);
+    }
+
+    .success-icon {
+      width: 76px;
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      border-radius: 50%;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 42px;
+      font-weight: bold;
+    }
+
+    .success-card h1 {
+      margin: 0 0 14px;
+      color: var(--primary);
+      font-size: 34px;
+    }
+
+    .success-intro {
+      margin: 0 0 28px;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .success-details {
+      margin: 0 0 28px;
+      padding: 22px;
+      border-left: 5px solid var(--primary);
+      border-radius: 8px;
+      background: #f4f8f5;
+      text-align: left;
+      line-height: 1.7;
+    }
+
+    .success-details p {
+      margin: 0 0 12px;
+    }
+
+    .success-details p:last-child {
+      margin-bottom: 0;
+    }
+
+    .success-note {
+      margin: 0 0 26px;
+      color: #526779;
+      line-height: 1.6;
+    }
+
+    .success-home-link {
+      display: inline-block;
+      padding: 14px 24px;
+      border-radius: 8px;
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .success-home-link:hover {
+      background: var(--primary-dark);
+    }
+
+    @media (max-width: 900px) {
+      .booking-card {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .booking-picker {
+        grid-template-columns: 1fr;
+      }
+
+      .calendar-section,
+      .time-panel {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        min-height: 0;
+        max-height: none;
+      }
+
+      .calendar-grid {
+        min-height: 380px;
+      }
+
+      .time-list {
+        max-height: 450px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .sidebar,
+      .main {
+        padding: 26px 20px;
+      }
+
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .calendar-day {
+        width: 36px;
+        height: 36px;
+      }
+
+      .calendar-header {
+        grid-template-columns:
+          40px minmax(130px, 1fr) 40px;
+      }
+
+      .success-page {
+        padding: 18px;
+      }
+
+      .success-card {
+        padding: 28px 20px;
+      }
+
+      .success-card h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div
+    id="processingOverlay"
+    class="processing-overlay"
+  >
+    <div class="processing-card">
+      <h2 id="processingTitle">
+        Checking your payment
+      </h2>
+
+      <p id="processingText">
+        Please wait while we confirm your booking.
+      </p>
+    </div>
+  </div>
+
+  <div
+    id="bookingApp"
+    class="booking-card"
+  >
+    <aside class="sidebar">
+      <p class="host-name">
+        <?= businessName ?>
+      </p>
+
+      <h1>
+        Book your appointment
+      </h1>
+
+      <p class="description">
+        Select one or more available appointment times,
+        then enter your booking details.
+      </p>
+
+      <div class="meta">
+        <div class="meta-item">
+          <span class="meta-icon">◷</span>
+          <span>30-minute appointments</span>
+        </div>
+
+        <div class="meta-item">
+          <span class="meta-icon">＋</span>
+          <span>Choose multiple times</span>
+        </div>
+
+        <div class="meta-item">
+          <span class="meta-icon">⌖</span>
+          <span>Service area set by the business</span>
+        </div>
+      </div>
+
+      <div class="selected-area">
+        <h3>Your selected times</h3>
+
+        <div
+          id="selectedSummary"
+          class="selected-summary empty"
+        >
+          No times selected yet.
+        </div>
+
+        <button
+          id="clearSelection"
+          class="clear-button"
+          type="button"
+        >
+          Clear selected times
+        </button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="section-heading top-heading">
+        <p class="kicker">
+          Select a date and time
+        </p>
+
+        <h2>
+          Choose your appointment
+        </h2>
+      </div>
+
+      <div class="booking-picker">
+        <section class="calendar-section">
+          <div class="calendar-header">
+            <button
+              id="previousMonth"
+              class="calendar-nav"
+              type="button"
+              aria-label="Previous month"
+            >
+              ‹
+            </button>
+
+            <h3 id="calendarTitle"></h3>
+
+            <button
+              id="nextMonth"
+              class="calendar-nav"
+              type="button"
+              aria-label="Next month"
+            >
+              ›
+            </button>
+          </div>
+
+          <div class="weekdays">
+            <span>MON</span>
+            <span>TUE</span>
+            <span>WED</span>
+            <span>THU</span>
+            <span>FRI</span>
+            <span>SAT</span>
+            <span>SUN</span>
+          </div>
+
+          <div
+            id="calendarGrid"
+            class="calendar-grid"
+          ></div>
+        </section>
+
+        <section class="time-panel">
+          <h3 id="selectedDateTitle">
+            Select a date
+          </h3>
+
+          <div
+            id="timeList"
+            class="time-list"
+          >
+            <div class="loading">
+              Choose a highlighted date.
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="details-panel">
+        <div class="section-heading">
+          <p class="kicker">
+            Your details
+          </p>
+
+          <h2>
+            Tell us who is booking
+          </h2>
+
+          <p class="required-note">
+            * Required field
+          </p>
+        </div>
+
+        <div class="details-grid">
+          <label>
+            Full name
+            <span class="required-star">*</span>
+
+            <input
+              id="customerName"
+              type="text"
+              autocomplete="name"
+              required
+            >
+          </label>
+
+          <label>
+            Email address
+            <span class="required-star">*</span>
+
+            <input
+              id="email"
+              type="email"
+              autocomplete="email"
+              required
+            >
+          </label>
+
+          <label>
+            Phone number
+            <span class="required-star">*</span>
+
+            <input
+              id="phone"
+              type="tel"
+              autocomplete="tel"
+              required
+            >
+          </label>
+
+          <label>
+            <span id="addressLabel">
+              Address or location
+            </span>
+
+            <span class="required-star">*</span>
+
+            <input
+              id="address"
+              type="text"
+              autocomplete="street-address"
+              required
+            >
+          </label>
+
+          <label>
+            Event type
+            <span class="required-star">*</span>
+
+            <select
+              id="eventType"
+              required
+            >
+              <option value="">
+                Select an event type
+              </option>
+
+              <option value="Appointment">
+                Appointment
+              </option>
+
+              <option value="Consultation">
+                Consultation
+              </option>
+
+              <option value="Business Event">
+                Business Events
+              </option>
+
+              <option value="Group Booking">
+                Group Booking
+              </option>
+
+              <option value="On-site Service">
+                On-site Service
+              </option>
+
+              <option value="Online Appointment">
+                Online Appointment (paid securely through Stripe)
+              </option>
+
+              <option value="Other">
+                Other
+              </option>
+            </select>
+          </label>
+
+          <label>
+            Organisation/business name
+
+            <input
+              id="organisation"
+              type="text"
+            >
+          </label>
+        </div>
+
+        <div
+          id="paymentPanel"
+          class="payment-panel"
+        >
+          <h3>
+            Online appointment payment
+          </h3>
+
+          <p class="payment-price">
+            Price shown at checkout
+          </p>
+
+          <p>
+            Your selected time will be held
+            for 30 minutes while you complete payment
+            securely through Stripe.
+          </p>
+
+          <p>
+            Online payment bookings require one appointment time.
+          </p>
+        </div>
+
+        <label>
+          Please share any details that will help us prepare for your booking.
+          
+          <span class="required-star">*</span>
+
+          <textarea
+            id="notes"
+            rows="4"
+            required
+            placeholder="Booking requirements, attendees, access instructions, preferences, or other useful details."
+          ></textarea>
+        </label>
+
+        <button
+          id="confirmButton"
+          class="confirm-button"
+          type="button"
+          disabled
+        >
+          Submit booking request
+        </button>
+
+        <div
+          id="statusMessage"
+          class="status"
+        ></div>
+      </section>
+
+      <section
+        id="confirmation"
+        class="confirmation"
+      >
+        <h2>
+          Your booking has been received
+        </h2>
+
+        <div id="confirmationText"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const WEBSITE_URL = <?!= JSON.stringify(websiteUrl || "") ?>;
+    const BUSINESS_NAME = <?!= JSON.stringify(businessName || "Booking Service") ?>;
+
+    const MONTHS_AHEAD = 9;
+
+    const PAYMENT_EVENT_TYPE =
+      "Online Appointment";
+
+    const selectedSlots =
+      new Set();
+
+    const loadedMonths = {};
+
+    let selectedDate = null;
+
+    let calendarMonth =
+      new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        1
+      );
+
+
+    function monthKey(
+      year,
+      monthNumber
+    ) {
+      return (
+        year +
+        "-" +
+        String(monthNumber)
+          .padStart(2, "0")
+      );
+    }
+
+
+    function currentMonthKey() {
+      return monthKey(
+        calendarMonth.getFullYear(),
+        calendarMonth.getMonth() + 1
+      );
+    }
+
+
+    function localDateKey(date) {
+      return [
+        date.getFullYear(),
+
+        String(
+          date.getMonth() + 1
+        ).padStart(2, "0"),
+
+        String(
+          date.getDate()
+        ).padStart(2, "0")
+      ].join("-");
+    }
+
+
+    function formatDate(value) {
+      return new Intl.DateTimeFormat(
+        "en-NZ",
+        {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        }
+      ).format(
+        new Date(
+          value + "T12:00:00"
+        )
+      );
+    }
+
+
+    function formatDateTime(value) {
+      return new Intl.DateTimeFormat(
+        "en-NZ",
+        {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit"
+        }
+      ).format(
+        new Date(value)
+      );
+    }
+
+
+    function formatTime(value) {
+      return new Intl.DateTimeFormat(
+        "en-NZ",
+        {
+          hour: "numeric",
+          minute: "2-digit"
+        }
+      ).format(
+        new Date(value)
+      );
+    }
+
+
+    function getCurrentMonthSlots() {
+      return (
+        loadedMonths[
+          currentMonthKey()
+        ] || []
+      );
+    }
+
+
+    function getAvailableDates() {
+      return new Set(
+        getCurrentMonthSlots()
+          .filter(
+            function (slot) {
+              return slot.available;
+            }
+          )
+          .map(
+            function (slot) {
+              return slot.start
+                .substring(0, 10);
+            }
+          )
+      );
+    }
+
+
+    function renderCalendar() {
+      const calendarTitle =
+        document.getElementById(
+          "calendarTitle"
+        );
+
+      const grid =
+        document.getElementById(
+          "calendarGrid"
+        );
+
+      if (
+        !calendarTitle ||
+        !grid
+      ) {
+        return;
+      }
+
+      calendarTitle.textContent =
+        calendarMonth
+          .toLocaleDateString(
+            "en-NZ",
+            {
+              month: "long",
+              year: "numeric"
+            }
+          );
+
+      grid.innerHTML = "";
+
+      const key =
+        currentMonthKey();
+
+      if (
+        loadedMonths[key] ===
+        "loading"
+      ) {
+        grid.innerHTML =
+          '<div class="calendar-loading">' +
+          "Loading available dates…" +
+          "</div>";
+
+        updateMonthButtons();
+        return;
+      }
+
+      const year =
+        calendarMonth.getFullYear();
+
+      const month =
+        calendarMonth.getMonth();
+
+      const first =
+        new Date(
+          year,
+          month,
+          1
+        );
+
+      const offset =
+        (
+          first.getDay() + 6
+        ) % 7;
+
+      const start =
+        new Date(
+          year,
+          month,
+          1 - offset
+        );
+
+      const availableDates =
+        getAvailableDates();
+
+      const todayKey =
+        localDateKey(
+          new Date()
+        );
+
+      for (
+        let index = 0;
+        index < 42;
+        index++
+      ) {
+        const date =
+          new Date(start);
+
+        date.setDate(
+          start.getDate() +
+          index
+        );
+
+        const dateKey =
+          localDateKey(date);
+
+        const button =
+          document.createElement(
+            "button"
+          );
+
+        button.type = "button";
+        button.className =
+          "calendar-day";
+        button.textContent =
+          date.getDate();
+
+        if (
+          date.getMonth() !==
+          month
+        ) {
+          button.classList.add(
+            "other-month"
+          );
+        }
+
+        if (
+          dateKey ===
+          todayKey
+        ) {
+          button.classList.add(
+            "today"
+          );
+        }
+
+        const available =
+          date.getMonth() ===
+          month &&
+          availableDates.has(
+            dateKey
+          );
+
+        if (available) {
+          button.classList.add(
+            "available"
+          );
+
+          button.addEventListener(
+            "click",
+            function () {
+              selectedDate =
+                dateKey;
+
+              renderCalendar();
+              renderTimes();
+            }
+          );
+
+        } else {
+          button.classList.add(
+            "unavailable"
+          );
+
+          button.disabled = true;
+        }
+
+        if (
+          selectedDate ===
+          dateKey
+        ) {
+          button.classList.add(
+            "selected-date"
+          );
+        }
+
+        grid.appendChild(
+          button
+        );
+      }
+
+      updateMonthButtons();
+    }
+
+
+    function renderTimes() {
+      const title =
+        document.getElementById(
+          "selectedDateTitle"
+        );
+
+      const list =
+        document.getElementById(
+          "timeList"
+        );
+
+      if (
+        !title ||
+        !list
+      ) {
+        return;
+      }
+
+      if (!selectedDate) {
+        title.textContent =
+          "Select a date";
+
+        list.innerHTML =
+          '<div class="no-times">' +
+          "Choose a highlighted date." +
+          "</div>";
+
+        return;
+      }
+
+      title.textContent =
+        formatDate(
+          selectedDate
+        );
+
+      const slots =
+        getCurrentMonthSlots()
+          .filter(
+            function (slot) {
+              return slot.start
+                .startsWith(
+                  selectedDate
+                );
+            }
+          );
+
+      list.innerHTML = "";
+
+      if (!slots.length) {
+        list.innerHTML =
+          '<div class="no-times">' +
+          "No times are available on this date." +
+          "</div>";
+
+        return;
+      }
+
+      slots.forEach(
+        function (slot) {
+          const button =
+            document.createElement(
+              "button"
+            );
+
+          button.type = "button";
+          button.className =
+            "time-slot";
+
+          button.textContent =
+            formatTime(
+              slot.start
+            );
+
+          if (!slot.available) {
+            button.classList.add(
+              "unavailable"
+            );
+
+            button.disabled = true;
+          }
+
+          if (
+            selectedSlots.has(
+              slot.start
+            )
+          ) {
+            button.classList.add(
+              "selected"
+            );
+          }
+
+          button.addEventListener(
+            "click",
+            function () {
+              const eventTypeElement =
+                document.getElementById(
+                  "eventType"
+                );
+
+              const isVirtual =
+                eventTypeElement &&
+                eventTypeElement.value ===
+                PAYMENT_EVENT_TYPE;
+
+              if (isVirtual) {
+                if (
+                  selectedSlots.has(
+                    slot.start
+                  )
+                ) {
+                  selectedSlots.clear();
+                } else {
+                  selectedSlots.clear();
+
+                  selectedSlots.add(
+                    slot.start
+                  );
+                }
+
+              } else if (
+                selectedSlots.has(
+                  slot.start
+                )
+              ) {
+                selectedSlots.delete(
+                  slot.start
+                );
+
+              } else {
+                selectedSlots.add(
+                  slot.start
+                );
+              }
+
+              renderTimes();
+              renderSelectedSummary();
+            }
+          );
+
+          list.appendChild(
+            button
+          );
+        }
+      );
+    }
+
+
+    function renderSelectedSummary() {
+      const values =
+        Array.from(
+          selectedSlots
+        ).sort();
+
+      const summary =
+        document.getElementById(
+          "selectedSummary"
+        );
+
+      const confirmButton =
+        document.getElementById(
+          "confirmButton"
+        );
+
+      if (
+        !summary ||
+        !confirmButton
+      ) {
+        return;
+      }
+
+      confirmButton.disabled =
+        values.length === 0;
+
+      if (!values.length) {
+        summary.className =
+          "selected-summary empty";
+
+        summary.textContent =
+          "No times selected yet.";
+
+        return;
+      }
+
+      summary.className =
+        "selected-summary";
+
+      summary.innerHTML =
+        "<ul>" +
+        values.map(
+          function (value) {
+            return (
+              "<li>" +
+              escapeHtmlClient(
+                formatDateTime(value)
+              ) +
+              "</li>"
+            );
+          }
+        ).join("") +
+        "</ul>";
+    }
+
+
+    function loadCurrentMonth() {
+      const bookingApp =
+        document.getElementById(
+          "bookingApp"
+        );
+
+      if (!bookingApp) {
+        return;
+      }
+
+      const year =
+        calendarMonth
+          .getFullYear();
+
+      const monthNumber =
+        calendarMonth
+          .getMonth() + 1;
+
+      const key =
+        monthKey(
+          year,
+          monthNumber
+        );
+
+      if (
+        Array.isArray(
+          loadedMonths[key]
+        )
+      ) {
+        renderCalendar();
+        renderTimes();
+        return;
+      }
+
+      if (
+        loadedMonths[key] ===
+        "loading"
+      ) {
+        return;
+      }
+
+      loadedMonths[key] =
+        "loading";
+
+      selectedDate = null;
+
+      renderCalendar();
+      renderTimes();
+
+      google.script.run
+        .withSuccessHandler(
+          function (slots) {
+            loadedMonths[key] =
+              Array.isArray(slots)
+                ? slots
+                : [];
+
+            const firstAvailable =
+              loadedMonths[key]
+                .find(
+                  function (slot) {
+                    return slot.available;
+                  }
+                );
+
+            if (firstAvailable) {
+              selectedDate =
+                firstAvailable.start
+                  .substring(0, 10);
+            }
+
+            renderCalendar();
+            renderTimes();
+          }
+        )
+        .withFailureHandler(
+          function (error) {
+            loadedMonths[key] = [];
+
+            showStatus(
+              getErrorMessage(error),
+              "error"
+            );
+
+            renderCalendar();
+            renderTimes();
+          }
+        )
+        .getAvailableSlotsForMonth(
+          year,
+          monthNumber
+        );
+    }
+
+
+    function updateMonthButtons() {
+      const previousButton =
+        document.getElementById(
+          "previousMonth"
+        );
+
+      const nextButton =
+        document.getElementById(
+          "nextMonth"
+        );
+
+      if (
+        !previousButton ||
+        !nextButton
+      ) {
+        return;
+      }
+
+      const now =
+        new Date();
+
+      const earliest =
+        new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          1
+        );
+
+      const latest =
+        new Date(
+          now.getFullYear(),
+          now.getMonth() +
+          MONTHS_AHEAD,
+          1
+        );
+
+      previousButton.disabled =
+        calendarMonth <=
+        earliest;
+
+      nextButton.disabled =
+        calendarMonth >=
+        latest;
+    }
+
+
+    function handleEventTypeChange() {
+      const eventTypeElement =
+        document.getElementById(
+          "eventType"
+        );
+
+      const paymentPanel =
+        document.getElementById(
+          "paymentPanel"
+        );
+
+      const confirmButton =
+        document.getElementById(
+          "confirmButton"
+        );
+
+      const addressLabel =
+        document.getElementById(
+          "addressLabel"
+        );
+
+      const addressInput =
+        document.getElementById(
+          "address"
+        );
+
+      if (
+        !eventTypeElement ||
+        !paymentPanel ||
+        !confirmButton ||
+        !addressLabel ||
+        !addressInput
+      ) {
+        return;
+      }
+
+      const virtual =
+        eventTypeElement.value ===
+        PAYMENT_EVENT_TYPE;
+
+      paymentPanel.classList.toggle(
+        "show",
+        virtual
+      );
+
+      confirmButton.textContent =
+        virtual
+          ? "Continue to secure payment"
+          : "Submit booking request";
+
+      addressLabel.textContent =
+        virtual
+          ? "Your location or time zone"
+          : "Address or location";
+
+      addressInput.placeholder =
+        virtual
+          ? "For example: Service area set by the business"
+          : "";
+
+      if (
+        virtual &&
+        selectedSlots.size > 1
+      ) {
+        selectedSlots.clear();
+
+        showStatus(
+          "Online appointments require one 30-minute appointment. Please select one time.",
+          "info"
+        );
+
+        renderTimes();
+        renderSelectedSummary();
+      }
+    }
+
+
+    function getBookingData() {
+      return {
+        customerName:
+          document.getElementById(
+            "customerName"
+          ).value.trim(),
+
+        email:
+          document.getElementById(
+            "email"
+          ).value.trim(),
+
+        phone:
+          document.getElementById(
+            "phone"
+          ).value.trim(),
+
+        organisation:
+          document.getElementById(
+            "organisation"
+          ).value.trim(),
+
+        address:
+          document.getElementById(
+            "address"
+          ).value.trim(),
+
+        eventType:
+          document.getElementById(
+            "eventType"
+          ).value,
+
+        notes:
+          document.getElementById(
+            "notes"
+          ).value.trim(),
+
+        selectedTimes:
+          Array.from(
+            selectedSlots
+          ).sort()
+      };
+    }
+
+
+    function validateForm(
+      bookingData
+    ) {
+      const required = [
+        [
+          "customerName",
+          "Please enter your full name."
+        ],
+        [
+          "email",
+          "Please enter your email address."
+        ],
+        [
+          "phone",
+          "Please enter your phone number."
+        ],
+        [
+          "address",
+          "Please enter your visit address or location."
+        ],
+        [
+          "eventType",
+          "Please select an event type."
+        ],
+        [
+          "notes",
+          "Please provide information to help us prepare."
+        ]
+      ];
+
+      for (
+        const field of required
+      ) {
+        const element =
+          document.getElementById(
+            field[0]
+          );
+
+        if (
+          !element ||
+          !element.value.trim()
+        ) {
+          showStatus(
+            field[1],
+            "error"
+          );
+
+          if (element) {
+            element.focus();
+          }
+
+          return false;
+        }
+      }
+
+      if (
+        !bookingData.email
+          .includes("@")
+      ) {
+        showStatus(
+          "Please enter a valid email address.",
+          "error"
+        );
+
+        document.getElementById(
+          "email"
+        ).focus();
+
+        return false;
+      }
+
+      if (
+        !bookingData
+          .selectedTimes
+          .length
+      ) {
+        showStatus(
+          "Please select an appointment time.",
+          "error"
+        );
+
+        return false;
+      }
+
+      if (
+        bookingData.eventType ===
+        PAYMENT_EVENT_TYPE &&
+        bookingData
+          .selectedTimes
+          .length !== 1
+      ) {
+        showStatus(
+          "Please select one 30-minute time for your Online Appointment.",
+          "error"
+        );
+
+        return false;
+      }
+
+      return true;
+    }
+
+
+    function submitBooking() {
+      clearStatus();
+
+      const bookingData =
+        getBookingData();
+
+      if (
+        !validateForm(
+          bookingData
+        )
+      ) {
+        return;
+      }
+
+      const button =
+        document.getElementById(
+          "confirmButton"
+        );
+
+      button.disabled = true;
+
+      const virtual =
+        bookingData.eventType ===
+        PAYMENT_EVENT_TYPE;
+
+      button.textContent =
+        virtual
+          ? "Opening secure payment…"
+          : "Submitting…";
+
+      if (virtual) {
+        google.script.run
+          .withSuccessHandler(
+            function (result) {
+              if (
+                !result ||
+                !result.checkoutUrl
+              ) {
+                button.disabled =
+                  false;
+
+                handleEventTypeChange();
+
+                showStatus(
+                  "Stripe did not return a payment link.",
+                  "error"
+                );
+
+                return;
+              }
+
+              window.open(
+                result.checkoutUrl,
+                "_top"
+              );
+            }
+          )
+          .withFailureHandler(
+            function (error) {
+              button.disabled =
+                false;
+
+              handleEventTypeChange();
+
+              showStatus(
+                getErrorMessage(error),
+                "error"
+              );
+            }
+          )
+          .createVirtualCheckout(
+            bookingData
+          );
+
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(
+          function (result) {
+            button.textContent =
+              "Submit booking request";
+
+            showStandardConfirmation(
+              bookingData,
+              result.bookingId
+            );
+
+            selectedSlots.clear();
+
+            delete loadedMonths[
+              currentMonthKey()
+            ];
+
+            renderSelectedSummary();
+            loadCurrentMonth();
+          }
+        )
+        .withFailureHandler(
+          function (error) {
+            button.disabled =
+              false;
+
+            button.textContent =
+              "Submit booking request";
+
+            showStatus(
+              getErrorMessage(error),
+              "error"
+            );
+          }
+        )
+        .createBooking(
+          bookingData
+        );
+    }
+
+
+    function showStandardConfirmation(
+      bookingData,
+      bookingId
+    ) {
+      const confirmation =
+        document.getElementById(
+          "confirmation"
+        );
+
+      const confirmationText =
+        document.getElementById(
+          "confirmationText"
+        );
+
+      if (
+        !confirmation ||
+        !confirmationText
+      ) {
+        return;
+      }
+
+      confirmationText.innerHTML =
+        "<p>Thanks, <strong>" +
+        escapeHtmlClient(
+          bookingData.customerName
+        ) +
+        "</strong>.</p>" +
+
+        "<p>Your selected time has been provisionally reserved.</p>" +
+
+        "<p><strong>Booking ID:</strong> " +
+        escapeHtmlClient(
+          bookingId
+        ) +
+        "</p>" +
+
+        "<p>A confirmation has been emailed to you.</p>";
+
+      confirmation.classList.add(
+        "show"
+      );
+
+      confirmation.scrollIntoView({
+        behavior: "smooth"
+      });
+    }
+
+
+    function handleStripeReturn(
+      callback
+    ) {
+      google.script.url.getLocation(
+        function (location) {
+          const parameters =
+            location &&
+            location.parameter
+              ? location.parameter
+              : {};
+
+          const stripeStatus =
+            parameters.stripe || "";
+
+          if (
+            stripeStatus ===
+            "success"
+          ) {
+            const sessionId =
+              parameters.session_id || "";
+
+            if (!sessionId) {
+              showStatus(
+                "Stripe returned without a Checkout Session ID.",
+                "error"
+              );
+
+              callback(false);
+              return;
+            }
+
+            showProcessing(
+              "Checking your payment",
+              "Please wait while we confirm your online appointment."
+            );
+
+            google.script.run
+              .withSuccessHandler(
+                function (result) {
+                  hideProcessing();
+
+                  showPaymentSuccessPage(
+                    result
+                  );
+
+                  callback(true);
+                }
+              )
+              .withFailureHandler(
+                function (error) {
+                  showProcessing(
+                    "Payment confirmation problem",
+                    getErrorMessage(error)
+                  );
+
+                  callback(true);
+                }
+              )
+              .finalizeStripePayment(
+                sessionId
+              );
+
+            return;
+          }
+
+          if (
+            stripeStatus ===
+            "cancelled"
+          ) {
+            const bookingId =
+              parameters.booking_id || "";
+
+            showProcessing(
+              "Cancelling payment",
+              "Please wait while your temporary booking hold is released."
+            );
+
+            google.script.run
+              .withSuccessHandler(
+                function () {
+                  hideProcessing();
+
+                  showStatus(
+                    "Payment was cancelled. No payment was taken, and the appointment time has been released.",
+                    "info"
+                  );
+
+                  delete loadedMonths[
+                    currentMonthKey()
+                  ];
+
+                  loadCurrentMonth();
+
+                  callback(true);
+                }
+              )
+              .withFailureHandler(
+                function (error) {
+                  hideProcessing();
+
+                  showStatus(
+                    getErrorMessage(error),
+                    "error"
+                  );
+
+                  callback(true);
+                }
+              )
+              .cancelVirtualCheckout(
+                bookingId
+              );
+
+            return;
+          }
+
+          callback(false);
+        }
+      );
+    }
+
+
+    function showPaymentSuccessPage(
+      result
+    ) {
+      const appointment =
+        result &&
+        result.selectedTimes &&
+        result.selectedTimes.length
+          ? formatDateTime(
+              result.selectedTimes[0]
+            )
+          : "";
+
+      const bookingApp =
+        document.getElementById(
+          "bookingApp"
+        );
+
+      if (bookingApp) {
+        bookingApp.remove();
+      }
+
+      hideProcessing();
+
+      document.title =
+        "Payment successful | <?= businessName ?>";
+
+      const oldSuccessPage =
+        document.querySelector(
+          ".success-page"
+        );
+
+      if (oldSuccessPage) {
+        oldSuccessPage.remove();
+      }
+
+      const successPage =
+        document.createElement(
+          "main"
+        );
+
+      successPage.className =
+        "success-page";
+
+      successPage.innerHTML =
+        '<section class="success-card">' +
+
+          '<div class="success-icon">' +
+            "✓" +
+          "</div>" +
+
+          "<h1>Payment successful</h1>" +
+
+          '<p class="success-intro">' +
+            "Thank you, <strong>" +
+            escapeHtmlClient(
+              result.customerName
+            ) +
+            "</strong>. Your payment has been received and your online appointment is now confirmed." +
+          "</p>" +
+
+          '<div class="success-details">' +
+
+            (
+              appointment
+                ? "<p>" +
+                    "<strong>Appointment:</strong><br>" +
+                    escapeHtmlClient(
+                      appointment
+                    ) +
+                  "</p>"
+                : ""
+            ) +
+
+            "<p>" +
+              "<strong>Booking ID:</strong><br>" +
+              escapeHtmlClient(
+                result.bookingId
+              ) +
+            "</p>" +
+
+          "</div>" +
+
+          '<p class="success-note">' +
+            "A confirmation email and calendar invitation have been sent to you. We will be in touch with the Zoom details before your call." +
+          "</p>" +
+
+          '<a class="success-home-link" ' +
+            'href="' + WEBSITE_URL + '" ' +
+            'target="_top">' +
+            "Return to website" +
+          "</a>" +
+
+        "</section>";
+
+      document.body.appendChild(
+        successPage
+      );
+
+      window.scrollTo({
+        top: 0,
+        behavior: "instant"
+      });
+    }
+
+
+    function showStatus(
+      message,
+      type
+    ) {
+      const status =
+        document.getElementById(
+          "statusMessage"
+        );
+
+      if (!status) {
+        return;
+      }
+
+      status.textContent =
+        message;
+
+      status.className =
+        "status " + type;
+    }
+
+
+    function clearStatus() {
+      const status =
+        document.getElementById(
+          "statusMessage"
+        );
+
+      if (!status) {
+        return;
+      }
+
+      status.textContent = "";
+      status.className = "status";
+    }
+
+
+    function showProcessing(
+      title,
+      text
+    ) {
+      const titleElement =
+        document.getElementById(
+          "processingTitle"
+        );
+
+      const textElement =
+        document.getElementById(
+          "processingText"
+        );
+
+      const overlay =
+        document.getElementById(
+          "processingOverlay"
+        );
+
+      if (
+        titleElement &&
+        textElement &&
+        overlay
+      ) {
+        titleElement.textContent =
+          title;
+
+        textElement.textContent =
+          text;
+
+        overlay.classList.add(
+          "show"
+        );
+      }
+    }
+
+
+    function hideProcessing() {
+      const overlay =
+        document.getElementById(
+          "processingOverlay"
+        );
+
+      if (overlay) {
+        overlay.classList.remove(
+          "show"
+        );
+      }
+    }
+
+
+    function getErrorMessage(
+      error
+    ) {
+      return (
+        error &&
+        error.message
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    }
+
+
+    function escapeHtmlClient(
+      value
+    ) {
+      const element =
+        document.createElement(
+          "div"
+        );
+
+      element.textContent =
+        String(value || "");
+
+      return element.innerHTML;
+    }
+
+
+    function attachEventListeners() {
+      const previousButton =
+        document.getElementById(
+          "previousMonth"
+        );
+
+      const nextButton =
+        document.getElementById(
+          "nextMonth"
+        );
+
+      const clearButton =
+        document.getElementById(
+          "clearSelection"
+        );
+
+      const eventType =
+        document.getElementById(
+          "eventType"
+        );
+
+      const confirmButton =
+        document.getElementById(
+          "confirmButton"
+        );
+
+      previousButton.addEventListener(
+        "click",
+        function () {
+          calendarMonth =
+            new Date(
+              calendarMonth.getFullYear(),
+              calendarMonth.getMonth() - 1,
+              1
+            );
+
+          selectedDate = null;
+
+          loadCurrentMonth();
+        }
+      );
+
+      nextButton.addEventListener(
+        "click",
+        function () {
+          calendarMonth =
+            new Date(
+              calendarMonth.getFullYear(),
+              calendarMonth.getMonth() + 1,
+              1
+            );
+
+          selectedDate = null;
+
+          loadCurrentMonth();
+        }
+      );
+
+      clearButton.addEventListener(
+        "click",
+        function () {
+          selectedSlots.clear();
+
+          renderTimes();
+          renderSelectedSummary();
+        }
+      );
+
+      eventType.addEventListener(
+        "change",
+        handleEventTypeChange
+      );
+
+      confirmButton.addEventListener(
+        "click",
+        submitBooking
+      );
+    }
+
+
+    function startBookingApp() {
+      attachEventListeners();
+
+      renderSelectedSummary();
+      handleEventTypeChange();
+
+      handleStripeReturn(
+        function (
+          returningFromStripe
+        ) {
+          if (
+            !returningFromStripe
+          ) {
+            loadCurrentMonth();
+          }
+        }
+      );
+    }
+
+
+    if (
+      document.readyState ===
+      "loading"
+    ) {
+      document.addEventListener(
+        "DOMContentLoaded",
+        startBookingApp
+      );
+    } else {
+      startBookingApp();
+    }
+  </script>
+</body>
+</html>

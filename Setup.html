@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body{font-family:Arial,sans-serif;padding:16px;color:#183b56}label{display:block;font-weight:bold;margin:12px 0 4px}input{width:100%;box-sizing:border-box;padding:9px;border:1px solid #ccd5dd;border-radius:6px}button{margin-top:18px;width:100%;padding:11px;border:0;border-radius:6px;background:#034614;color:#fff;font-weight:bold;cursor:pointer}.note{font-size:12px;color:#647789}.status{margin-top:14px;padding:10px;background:#f1f8f3;display:none}.danger{color:#9b1c1c}</style>
+</head>
+<body>
+  <h2>Booking System Setup</h2>
+  <p class="note">Save the public settings here. Stripe’s secret key is stored securely in Script Properties and is never written to the Settings sheet.</p>
+  <form id="setupForm">
+    <label>Business name</label><input name="BUSINESS_NAME" required>
+    <label>Sender or team name</label><input name="OWNER_NAME" required>
+    <label>Notification email</label><input name="OWNER_EMAIL" type="email" required>
+    <label>Calendar ID or calendar email</label><input name="CALENDAR_ID" required>
+    <label>Timezone</label><input name="TIMEZONE" value="Etc/UTC" required>
+    <label>Website URL</label><input name="WEBSITE_URL" type="url">
+    <label>Deployed web app URL</label><input name="WEB_APP_URL" type="url"><div class="note">Paste the /exec URL after deploying the project as a web app.</div>
+    <label>Standard booking questionnaire URL</label><input name="STANDARD_BOOKING_QUESTIONNAIRE_URL" type="url">
+    <label>Group or event questionnaire URL</label><input name="GROUP_BOOKING_QUESTIONNAIRE_URL" type="url">
+    <label>Stripe secret key</label><input name="STRIPE_SECRET_KEY" type="password"><div class="note danger">Leave blank to keep the existing secret key.</div>
+    <label>Stripe price ID</label><input name="STRIPE_PRICE_ID">
+    <button type="submit">Save and install</button>
+  </form>
+  <div id="status" class="status"></div>
+<script>
+  const form=document.getElementById('setupForm'); const status=document.getElementById('status');
+  google.script.run.withSuccessHandler(function(data){Object.keys(data).forEach(function(key){const el=form.elements[key];if(el&&key!=="STRIPE_SECRET_KEY")el.value=data[key]||"";});}).getSetupData();
+  form.addEventListener('submit',function(e){e.preventDefault();status.style.display='block';status.textContent='Saving…';const data={};new FormData(form).forEach((v,k)=>data[k]=v);google.script.run.withSuccessHandler(function(message){status.textContent=message;}).withFailureHandler(function(error){status.textContent='Error: '+(error.message||error);}).saveSetupData(data);});
+</script>
+</body>
+</html>

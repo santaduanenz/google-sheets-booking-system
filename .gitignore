@@ -1,0 +1,28 @@
+# Operating system
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local environment and credentials
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+secrets.json
+.clasp.json
+
+# Exports and generated files
+*.zip
+*.log
+bookings-export.*
+customer-data.*
+
+# Temporary Office files
+~$*.docx
+~$*.xlsx
