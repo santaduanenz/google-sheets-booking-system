@@ -1,12 +1,14 @@
 ---
 name: Bug report
-about: Report a reproducible problem
+about: Report a problem with the booking system
+title: "[Bug] "
 labels: bug
+assignees: ""
 ---
 
 ## What happened?
 
-## What did you expect?
+Describe the problem.
 
 ## Steps to reproduce
 
@@ -14,13 +16,16 @@ labels: bug
 2.
 3.
 
+## Expected behaviour
+
+What should have happened?
+
+## Error details
+
+Include the Apps Script function name, line number and exact error message.
+
 ## Environment
 
 - Browser:
-- Operating system:
-- Apps Script function:
-- Error line number:
-
-## Redacted error output
-
-Do not include secret keys, customer data, private Calendar IDs or production deployment URLs.
+- Google account type:
+- Stripe test or live mode:
