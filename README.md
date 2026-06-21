@@ -4,6 +4,8 @@ A reusable booking system built with **Google Sheets**, **Google Apps Script**, 
 
 It provides a public booking page, availability management, calendar blocking, customer and owner emails, provisional-to-confirmed booking workflows, and an optional paid online appointment flow—without requiring a traditional web server or database.
 
+Front facing and admin spreadsheet video demo available on YouTube https://youtu.be/vCU54l2mzhE
+
 ## Features
 
 - Public responsive booking form hosted by Google Apps Script
